@@ -4,21 +4,20 @@ start: sentence EOF;
 
 // zdanie skalda sie ze zdan i spojnikow
 sentence: sentence CONJ sentence
-        | nounPhrase verbPhraseNoun
-        | nounPhrasePlural verbPhraseNouns
-        | PRONOUN_SINGULAR verbPhrase
-        | PRONOUN verbPhrasePlural
+        | nounPhrase verbPhrase
+        | nounPhrasePlural verbPhrasePlural
         | PRONOUN_I verbPhraseI;
 
 // todo liczba mnoga nie moze miec a/an
 // todo problem jest bo mozna dac has eatting, jakos to rozdzielic
 
-nounPhrase:  //ja ty on ono 😉
+nounPhrase:PRONOUN_SINGULAR  //ja ty on ono 😉
            // the/a + rzeczownik/przymiotnik rzeczownik +? PP
-           (DETERMINER_SINGULAR | DETERMINER) (NOUN_SINGULAR | (ADJECTIVE* NOUN_SINGULAR)) (prepositionalPhrase)?
+          | (DETERMINER_SINGULAR | DETERMINER) (NOUN_SINGULAR | (ADJECTIVE* NOUN_SINGULAR)) (prepositionalPhrase)?
           | NOUN_SINGULAR; // ranodomowy rzeczownik
 
-nounPhrasePlural: NOUN_PLURAL
+nounPhrasePlural: PRONOUN
+                | NOUN_PLURAL
                 | DETERMINER (NOUN_PLURAL | (ADJECTIVE* NOUN_PLURAL)) (prepositionalPhrase)?;
 
 // PP: on/in/by + rzeczownik
@@ -29,14 +28,10 @@ verbPhrase: tense ((nounPhrase | prepositionalPhrase | nounPhrasePlural)? | ADJE
 verbPhrasePlural: tensePlural ((nounPhrasePlural | prepositionalPhrase | nounPhrase)? | ADJECTIVE);
 
 verbPhraseI: tenseI ((nounPhrase | prepositionalPhrase | nounPhrasePlural)? | ADJECTIVE);
-// dla rzeczownikow innych niz pronoun
-verbPhraseNoun: tenseNoun ((nounPhrasePlural | prepositionalPhrase | nounPhrase)? | ADJECTIVE);
 
-verbPhraseNouns: tenseNouns ((nounPhrase | prepositionalPhrase | nounPhrasePlural)? | ADJECTIVE);
+tense: past | present | future;
 
-tense: past | present | future | AUXILIARY_PRESENT_HAS;
-
-tensePlural: pastPlural | presentPlural | future | AUXILIARY_PRESENT_HAVE;
+tensePlural: pastPlural | presentPlural | future;
 
 tenseI: past | presentI | future;
 
@@ -45,11 +40,11 @@ tenseNoun: past | present | future;
 tenseNouns: pastPlural | presentPlural | future;
 
 past: AUXILIARY_PAST_WAS  VERB_PRESENT | VERB_PAST | AUXILIARY_PAST | AUXILIARY_PAST_WAS ADJECTIVE;
-present: AUXILIARY_PRESENT  VERB_PRESENT | AUXILIARY_PRESENT ADJECTIVE;
+present: AUXILIARY_PRESENT  VERB_PRESENT | AUXILIARY_PRESENT ADJECTIVE | AUXILIARY_PRESENT_HAS;
 future: AUXILIARY_FUTURE  VERB_FUTURE | AUXILIARY_FUTURE AUXILIARY_INFINITIVE (AUXILIARY_PRESENT)*;
 
 pastPlural: AUXILIARY_PAST_WERE  VERB_PRESENT | VERB_PAST | AUXILIARY_PAST_WERE ADJECTIVE;
-presentPlural: AUXILIARY_PRESENT_PLURAL  VERB_PRESENT | AUXILIARY_PRESENT_PLURAL ADJECTIVE;
+presentPlural: AUXILIARY_PRESENT_PLURAL  VERB_PRESENT | AUXILIARY_PRESENT_PLURAL ADJECTIVE | AUXILIARY_PRESENT_HAVE;
 
 presentI: AUXILIARY_PRESENT_I  VERB_PRESENT | AUXILIARY_PRESENT_I ADJECTIVE| AUXILIARY_PRESENT_HAVE;
 
